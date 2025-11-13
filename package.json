@@ -1,0 +1,16 @@
+{
+  "name": "elden-mcp",
+  "version": "1.0.0",
+  "description": "Remote execution of MCP tools through Socket IO",
+  "main": "index.js",
+  "scripts": {
+    "test": "exit 0",
+    "oidc-server": "docker run -p 8080:8080 -v $(pwd)/elden-realm.json:/opt/keycloak/data/import/elden-realm.json -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:latest start-dev --import-realm"
+  },
+  "keywords": [],
+  "author": "Sepehr Laal",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.21.1"
+  }
+}
