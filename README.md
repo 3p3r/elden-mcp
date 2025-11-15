@@ -72,8 +72,6 @@ Elden-mcp is implemented using the following stack:
 ### Minor Technologies
 
 - **OpenID Connect (OIDC)**: For secure authentication and authorization.
-- **Vite**: For fast development and build tooling.
-- **Vitest**: For testing the implementation.
 - **Biome**: For code formatting and linting.
 - **React**: For building client-side user interfaces.
 - **Node.js**: For server-side JavaScript runtime.
