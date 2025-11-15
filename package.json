@@ -4,8 +4,11 @@
   "description": "Remote execution of MCP tools through Socket IO",
   "main": "index.js",
   "scripts": {
-    "test": "exit 0",
-    "dev": "npm run dev --prefix server",
+    "test": "VITE_CJS_IGNORE_WARNING=true CI=true npm-run-all test:*",
+    "test:ui": "npm run test:ui --prefix server",
+    "test:integration": "npm run test:integration --prefix server",
+    "dev": "npm-run-all --parallel dev:server oidc-server",
+    "dev:server": "npm run dev --prefix server",
     "build": "npm run build --prefix server",
     "start": "npm run start --prefix server",
     "oidc-server": "docker run -p 8080:8080 -v $(pwd)/elden-realm.json:/opt/keycloak/data/import/elden-realm.json -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:latest start-dev --import-realm"
@@ -14,6 +17,7 @@
   "author": "Sepehr Laal",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.21.1"
+    "@modelcontextprotocol/sdk": "^1.21.1",
+    "npm-run-all": "^4.1.5"
   }
 }

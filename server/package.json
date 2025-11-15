@@ -5,14 +5,23 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:integration": "vitest run src/lib/auth.integration.test.ts"
   },
   "dependencies": {
+    "better-auth": "^1.0.0",
+    "better-sqlite3": "^12.4.1",
+    "kysely": "^0.28.8",
     "next": "16.0.3"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20.19.25",
     "@types/react": "^19",
-    "typescript": "^5"
+    "@vitest/ui": "^1.0.0",
+    "typescript": "^5",
+    "vitest": "^1.0.0"
   }
 }

@@ -8,6 +8,7 @@ Remote execution of MCP tools through Socket IO.
 - [Implementation](#implementation)
   - [Major Technologies](#major-technologies)
   - [Minor Technologies](#minor-technologies)
+- [Authentication Setup](#authentication-setup)
 
 ## Summary
 
@@ -72,8 +73,24 @@ Elden-mcp is implemented using the following stack:
 ### Minor Technologies
 
 - **OpenID Connect (OIDC)**: For secure authentication and authorization.
+- **SQLite**: For persistent session storage (via better-sqlite3).
 - **Biome**: For code formatting and linting.
 - **React**: For building client-side user interfaces.
 - **Node.js**: For server-side JavaScript runtime.
 - **TypeScript**: For type safety and modern JavaScript features.
 - **Zod**: For schema validation of tool inputs and outputs.
+
+## Authentication Setup
+
+Better-Auth has been configured with OIDC support for the local Keycloak instance:
+
+- **Configuration**: OIDC provider configured in `server/src/lib/auth.ts` using the `genericOAuth` plugin
+- **Database**: SQLite database (`server/database.sqlite`) for persistent session storage
+- **API Routes**: Authentication endpoints available at `/api/auth/*`
+- **Health Check**: Protected health endpoint at `/api/health` requiring authentication
+- **Testing**: Comprehensive test suite including unit and integration tests (integration tests require Keycloak to be running)
+- **Documentation**: Postman testing guide in `server/POSTMAN_TESTING.md`
+
+The setup uses configuration from `elden-realm.json` by default, with environment variable overrides available. Run `npm run dev` from the root to start both Keycloak and the Next.js server.
+
+**Note**: The SQLite database file (`database.sqlite`) is automatically created on first run and is gitignored. Integration tests will fail if Keycloak is not available - ensure Keycloak is running before running tests.
