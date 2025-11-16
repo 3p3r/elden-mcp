@@ -1,7 +1,30 @@
-import memoize from 'lodash/memoize';
+import memoize from "lodash/memoize";
+import { type Socket } from "socket.io";
 
-const getSocketToSessionMap = memoize(() => new Map<string, string>());
-const getSessionToSocketMap = memoize(() => new Map<string, string>());
+const ensureGlobal = <T>(name: string, initialValue: T) => {
+  if (!(name in globalThis)) {
+    (globalThis as any)[name] = initialValue;
+  }
+  return (globalThis as any)[name] as T;
+};
+
+export const getSocketToSessionMap = memoize(() => {
+  const name = "__SOCKET_TO_SESSION_MAP__";
+  const map = new Map<string, string>();
+  return ensureGlobal<Map<string, string>>(name, map);
+});
+
+export const getSessionToSocketMap = memoize(() => {
+  const name = "__SESSION_TO_SOCKET_MAP__";
+  const map = new Map<string, string>();
+  return ensureGlobal<Map<string, string>>(name, map);
+});
+
+export const getSocketStorage = memoize(() => {
+  const name = "__SOCKET_STORAGE__";
+  const map = new Map<string, Socket>();
+  return ensureGlobal<Map<string, Socket>>(name, map);
+});
 
 export const addSocketSessionMapping = (socketId: string, sessionId: string) => {
   getSocketToSessionMap().set(socketId, sessionId);
@@ -46,4 +69,16 @@ export const removeSocketSessionMappingBySessionId = (sessionId: string) => {
       }
     }
   }
+};
+
+export const storeSocket = (socket: Socket) => {
+  getSocketStorage().set(socket.id, socket);
+};
+
+export const getSocketById = (socketId: string): Socket | undefined => {
+  return getSocketStorage().get(socketId);
+};
+
+export const removeSocketById = (socketId: string) => {
+  getSocketStorage().delete(socketId);
 };

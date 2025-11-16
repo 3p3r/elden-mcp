@@ -1,14 +1,19 @@
 import next from "next";
 import debug from "debug";
-import { parse } from 'cookie';
+import { parse } from "cookie";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 
 import { auth } from "@/lib/auth";
-import { addSocketSessionMapping, removeSocketSessionMappingBySocketId } from "@/lib/memory";
+import {
+  addSocketSessionMapping,
+  removeSocketById,
+  removeSocketSessionMappingBySocketId,
+  storeSocket,
+} from "@/lib/memory";
 
 const d = debug("server");
-const ws = require('ws').Server;
+const ws = require("ws").Server;
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.NEXT_PUBLIC_HOSTNAME || "localhost";
@@ -34,7 +39,7 @@ app.prepare().then(() => {
   io.use(async (socket, n) => {
     d("validating auth for socket: %s", socket.id);
 
-    const cookie = socket.handshake.headers.cookie || '';
+    const cookie = socket.handshake.headers.cookie || "";
 
     if (!cookie) {
       d("no cookies found in handshake, disconnecting socket: %s", socket.id);
@@ -43,7 +48,7 @@ app.prepare().then(() => {
     }
 
     const cookies = parse(cookie);
-    const sessionCookie = cookies['better-auth.session_token'] || cookies['__Secure-better-auth.session_token'];
+    const sessionCookie = cookies["better-auth.session_token"] || cookies["__Secure-better-auth.session_token"];
 
     if (!sessionCookie) {
       d("no session cookie found, disconnecting socket: %s", socket.id);
@@ -53,7 +58,7 @@ app.prepare().then(() => {
 
     try {
       const sessionData = await auth.api.getSession({
-        headers: { cookie: socket.handshake.headers.cookie || '' },
+        headers: { cookie: socket.handshake.headers.cookie || "" },
       });
 
       if (!sessionData) {
@@ -66,12 +71,18 @@ app.prepare().then(() => {
       socket.data.session = sessionData.session;
 
       addSocketSessionMapping(socket.id, sessionData.session.id);
+      storeSocket(socket);
 
       d("authenticated socket: %s for user id: %s", socket.id, sessionData.user.id);
       return n();
     } catch (error) {
-      d("error validating session for socket: %s, error: %s, stack: %s", socket.id, error, error instanceof Error ? error.stack : 'no stack');
-      return n(new Error(`Authentication error: ${error instanceof Error ? error.message : 'Unknown error'}`));
+      d(
+        "error validating session for socket: %s, error: %s, stack: %s",
+        socket.id,
+        error,
+        error instanceof Error ? error.stack : "no stack"
+      );
+      return n(new Error(`Authentication error: ${error instanceof Error ? error.message : "Unknown error"}`));
     }
   });
 
@@ -81,6 +92,7 @@ app.prepare().then(() => {
     socket.on("disconnect", (reason) => {
       d("user disconnected: %s, reason: %s", socket.id, reason);
       removeSocketSessionMappingBySocketId(socket.id);
+      removeSocketById(socket.id);
     });
   });
 
