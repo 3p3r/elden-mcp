@@ -20,6 +20,7 @@ const db = new Database(dbPath);
 export const auth = betterAuth({
   baseURL: baseUrl,
   database: db,
+  secret: process.env.BETTER_AUTH_SECRET || "change-me-please",
   plugins: [
     genericOAuth({
       config: [
