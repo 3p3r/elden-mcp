@@ -48,7 +48,8 @@ app.prepare().then(() => {
     }
 
     const cookies = parse(cookie);
-    const sessionCookie = cookies["better-auth.session_token"] || cookies["__Secure-better-auth.session_token"];
+    const sessionCookie =
+      cookies["better-auth.session_token"] || cookies["__Secure-better-auth.session_token"];
 
     if (!sessionCookie) {
       d("no session cookie found, disconnecting socket: %s", socket.id);
@@ -82,7 +83,11 @@ app.prepare().then(() => {
         error,
         error instanceof Error ? error.stack : "no stack"
       );
-      return n(new Error(`Authentication error: ${error instanceof Error ? error.message : "Unknown error"}`));
+      return n(
+        new Error(
+          `Authentication error: ${error instanceof Error ? error.message : "Unknown error"}`
+        )
+      );
     }
   });
 

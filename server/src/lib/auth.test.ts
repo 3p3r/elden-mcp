@@ -1,6 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { auth } from "./auth";
-import { realmConfig, REALM_NAME, CLIENT_ID, CLIENT_SECRET, DEFAULT_OIDC_ISSUER, DEFAULT_BASE_URL } from "./realm-config";
+import {
+  realmConfig,
+  REALM_NAME,
+  CLIENT_ID,
+  CLIENT_SECRET,
+  DEFAULT_OIDC_ISSUER,
+  DEFAULT_BASE_URL,
+} from "./realm-config";
 
 describe("Better Auth Configuration", () => {
   beforeEach(() => {
@@ -19,7 +26,7 @@ describe("Better Auth Configuration", () => {
   it("should use default OIDC configuration when env vars are not set", () => {
     const defaultAuth = auth;
     expect(defaultAuth).toBeDefined();
-    
+
     // Verify the instance is properly configured
     expect(defaultAuth.api).toBeDefined();
   });
@@ -43,7 +50,7 @@ describe("Better Auth Configuration", () => {
     // Verify auth instance has the expected structure
     expect(auth).toBeDefined();
     expect(auth.api).toBeDefined();
-    
+
     // The genericOAuth plugin should be registered
     // We can verify this by checking if the auth instance is functional
     expect(typeof auth.api).toBe("object");
@@ -81,4 +88,3 @@ describe("Better Auth Configuration", () => {
     });
   });
 });
-

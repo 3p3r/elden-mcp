@@ -1,6 +1,14 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { auth } from "./auth";
-import { realmConfig, REALM_NAME, CLIENT_ID, CLIENT_SECRET, DEFAULT_OIDC_ISSUER, DEFAULT_BASE_URL, getOidcConfig } from "./realm-config";
+import {
+  realmConfig,
+  REALM_NAME,
+  CLIENT_ID,
+  CLIENT_SECRET,
+  DEFAULT_OIDC_ISSUER,
+  DEFAULT_BASE_URL,
+  getOidcConfig,
+} from "./realm-config";
 
 // Extract test user credentials from realm config
 const testUser = realmConfig.users?.[0];
@@ -73,7 +81,7 @@ describe("Better Auth OIDC Integration Tests", () => {
       // Should return a redirect response
       expect(response).toBeDefined();
       expect(response).toBeInstanceOf(Response);
-      
+
       // The response should contain a redirect URL pointing to Keycloak
       const location = response.headers.get("location");
       if (location) {
@@ -124,25 +132,25 @@ describe("Better Auth OIDC Integration Tests", () => {
 
       expect(response).toBeInstanceOf(Response);
       const location = response.headers.get("location");
-      
+
       if (location) {
         const url = new URL(location);
-        
+
         // Check for required OAuth parameters
         expect(url.searchParams.has("client_id")).toBe(true);
         expect(url.searchParams.has("redirect_uri")).toBe(true);
         expect(url.searchParams.has("response_type")).toBe(true);
         expect(url.searchParams.has("scope")).toBe(true);
-        
+
         // Verify client ID matches configuration from elden-realm.json
         const clientId = url.searchParams.get("client_id");
         const { clientId: expectedClientId } = getOidcConfig();
         expect(clientId).toBe(expectedClientId);
-        
+
         // Verify scopes include openid
         const scope = url.searchParams.get("scope");
         expect(scope).toContain("openid");
-        
+
         // If we have a location header, status should be a redirect
         expect([302, 307, 308]).toContain(response.status);
       } else {
@@ -193,7 +201,7 @@ describe("Better Auth OIDC Integration Tests", () => {
     it("should have correct OIDC provider configuration", () => {
       // Verify the auth instance has the OIDC provider configured
       expect(auth).toBeDefined();
-      
+
       // The genericOAuth plugin should be registered
       // We can verify this by checking if signInSocial works
       expect(auth.api.signInSocial).toBeDefined();
@@ -212,7 +220,7 @@ describe("Better Auth OIDC Integration Tests", () => {
       expect(CLIENT_SECRET).toBeTruthy();
       expect(CLIENT_ID).toBe(realmConfig.clients?.[0]?.clientId);
       expect(CLIENT_SECRET).toBe(realmConfig.clients?.[0]?.secret);
-      
+
       // Verify getOidcConfig returns correct values
       const { clientId, clientSecret } = getOidcConfig();
       expect(clientId).toBeTruthy();
@@ -249,7 +257,7 @@ describe("Better Auth OIDC Integration Tests", () => {
       // 2. Simulate user login at Keycloak
       // 3. Get the authorization code from callback
       // 4. Exchange code for tokens
-      
+
       // For now, we'll test the direct password grant (if enabled in Keycloak)
       // Note: This requires the "Direct Access Grants" to be enabled in Keycloak
       try {
@@ -273,7 +281,7 @@ describe("Better Auth OIDC Integration Tests", () => {
           expect(tokens).toHaveProperty("access_token");
           expect(tokens).toHaveProperty("token_type");
           expect(tokens.token_type).toBe("Bearer");
-          
+
           // Verify we can get user info with the access token
           if (tokens.access_token && discovery.userinfo_endpoint) {
             const userInfoResponse = await fetch(discovery.userinfo_endpoint, {
@@ -300,4 +308,3 @@ describe("Better Auth OIDC Integration Tests", () => {
     });
   });
 });
-

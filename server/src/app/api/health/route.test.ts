@@ -13,7 +13,7 @@ vi.mock("next/headers", () => ({
 describe("Health Route - Real Implementation Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Reset environment variables to defaults from elden-realm.json
     process.env.OIDC_ISSUER = DEFAULT_OIDC_ISSUER;
     process.env.OIDC_CLIENT_ID = CLIENT_ID;
@@ -77,7 +77,7 @@ describe("Health Route - Real Implementation Tests", () => {
       // Should redirect to Keycloak
       expect(response.status).toBeGreaterThanOrEqual(300);
       expect(response.status).toBeLessThan(400);
-      
+
       const location = response.headers.get("location");
       expect(location).toBeDefined();
       expect(location).toContain(`${DEFAULT_OIDC_ISSUER}/protocol/openid-connect/auth`);
@@ -130,7 +130,7 @@ describe("Health Route - Real Implementation Tests", () => {
       // For this test, we'll need to create a session through better-auth
       // Since we can't easily create a real session without a database,
       // we'll test that the route handles the real auth.api.getSession call
-      
+
       // Mock headers with a session cookie
       const mockHeaders = new Headers();
       mockHeaders.set("host", "localhost:3000");
@@ -139,13 +139,13 @@ describe("Health Route - Real Implementation Tests", () => {
 
       // Call the real GET function which uses real auth.api.getSession
       const response = await GET();
-      
+
       // Since we don't have a real session, it should either:
       // 1. Return 401 if no session and Keycloak unavailable
       // 2. Return 307 redirect if no session and Keycloak available
       // 3. Return 200 if somehow a session exists
       expect([200, 401, 307, 302, 303]).toContain(response.status);
-      
+
       if (response.status === 200) {
         const data = await response.json();
         expect(data).toMatchObject({
@@ -173,9 +173,10 @@ describe("Health Route - Real Implementation Tests", () => {
       if (response.status === 200) {
         expect(consoleLogSpy).toHaveBeenCalled();
         const logCalls = consoleLogSpy.mock.calls;
-        const hasTokenLog = logCalls.some(call => 
-          call[0] === "[Health Check] Access Token:" || 
-          call[0] === "[Health Check] No access token available"
+        const hasTokenLog = logCalls.some(
+          (call) =>
+            call[0] === "[Health Check] Access Token:" ||
+            call[0] === "[Health Check] No access token available"
         );
         expect(hasTokenLog).toBe(true);
       }

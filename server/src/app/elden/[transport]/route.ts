@@ -43,7 +43,7 @@ const handler = createMcpHandler(
                 text: answer,
               },
             ],
-          } as any); // todo: fix this type.
+          }) as any; // todo: fix this type.
 
         const sessionId = extra.authInfo?.extra?.sessionId as string | undefined;
 

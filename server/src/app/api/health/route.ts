@@ -17,10 +17,10 @@ export async function GET() {
       const requestHeaders = await headers();
       const { baseUrl } = getOidcConfig();
       const signInUrl = new URL(`${baseUrl}/api/auth/sign-in/oauth2`);
-      
+
       // Get host from headers for proper request context
       const host = requestHeaders.get("host") || new URL(baseUrl).host;
-      
+
       // Create a request to better-auth's OAuth sign-in endpoint
       const oauthRequest = new Request(signInUrl.toString(), {
         method: "POST",
@@ -38,25 +38,25 @@ export async function GET() {
 
       // Let better-auth handle the OAuth flow
       const response = await auth.handler(oauthRequest);
-      
+
       if (response.status >= 500) {
         // Keycloak is likely unavailable, return 401 instead
         return NextResponse.json(
-          { 
+          {
             error: "Authentication required",
             message: "Please authenticate to access the health endpoint",
-            redirectTo: "/api/auth/sign-in/oauth2"
+            redirectTo: "/api/auth/sign-in/oauth2",
           },
           { status: 401 }
         );
       }
-      
+
       // Better-auth may return a redirect response (302/307) or a JSON response with redirect info
       if (response.status >= 300 && response.status < 400) {
         // It's already a redirect response, return it directly
         return response;
       }
-      
+
       // If it's a JSON response with redirect info, extract the URL and redirect
       if (response.status === 200) {
         try {
@@ -64,38 +64,38 @@ export async function GET() {
           if (data.redirect && data.url) {
             return NextResponse.redirect(data.url);
           }
-        } catch(e) {
+        } catch (e) {
           d("Failed to parse JSON from OAuth response: %O", e);
         }
       }
-      
+
       // If we get here, something unexpected happened
       return NextResponse.json(
-        { 
+        {
           error: "Authentication required",
           message: "Please authenticate to access the health endpoint",
-          redirectTo: "/api/auth/sign-in/oauth2"
+          redirectTo: "/api/auth/sign-in/oauth2",
         },
         { status: 401 }
       );
     } catch (error) {
       // Log unexpected errors (connection refused is expected when Keycloak is not running)
-      const isConnectionRefused = error instanceof Error && (
-        error.message.includes("ECONNREFUSED") ||
-        error.message.includes("fetch failed") ||
-        (error.cause instanceof Error && error.cause.message.includes("ECONNREFUSED"))
-      );
-      
+      const isConnectionRefused =
+        error instanceof Error &&
+        (error.message.includes("ECONNREFUSED") ||
+          error.message.includes("fetch failed") ||
+          (error.cause instanceof Error && error.cause.message.includes("ECONNREFUSED")));
+
       if (!isConnectionRefused) {
         d("[Health Check] Failed to initiate OAuth sign-in: %O", error);
       }
-      
+
       // Fallback: return 401 with redirect information
       return NextResponse.json(
-        { 
+        {
           error: "Authentication required",
           message: "Please authenticate to access the health endpoint",
-          redirectTo: "/api/auth/sign-in/oauth2"
+          redirectTo: "/api/auth/sign-in/oauth2",
         },
         { status: 401 }
       );
@@ -114,4 +114,3 @@ export async function GET() {
     },
   });
 }
-

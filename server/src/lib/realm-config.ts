@@ -26,12 +26,12 @@ export function getOidcConfig() {
     issuer: process.env.OIDC_ISSUER || DEFAULT_OIDC_ISSUER,
     clientId: process.env.OIDC_CLIENT_ID || CLIENT_ID,
     clientSecret: process.env.OIDC_CLIENT_SECRET || CLIENT_SECRET,
-    baseUrl: process.env.BASE_URL && process.env.BASE_URL !== "/"
-      ? process.env.BASE_URL
-      : DEFAULT_BASE_URL,
+    baseUrl:
+      process.env.BASE_URL && process.env.BASE_URL !== "/"
+        ? process.env.BASE_URL
+        : DEFAULT_BASE_URL,
   };
 }
 
 // Export realm config for tests
 export { realmConfig };
-

@@ -4,14 +4,9 @@
     {
       "name": "npm-start",
       "request": "launch",
-      "runtimeArgs": [
-        "run-script",
-        "start"
-      ],
+      "runtimeArgs": ["run-script", "start"],
       "runtimeExecutable": "npm",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "type": "node"
     }
   ]
