@@ -1,6 +1,8 @@
 import { z } from "zod";
 import debug from "debug";
+import { auth } from "@/lib/auth";
 import { createMcpHandler, withMcpAuth } from "mcp-handler";
+import { type AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js";
 // import { ensureOneSocket } from "@/lib/memory";
 
 const d = debug("mcp");
@@ -43,6 +45,37 @@ const handler = createMcpHandler(
   },
 );
 
-// const authHandler = withMcpAuth(handler);
+const verifyToken = async (
+  req: Request,
+  bearerToken?: string
+): Promise<AuthInfo | undefined> => {
+  if (!bearerToken) return undefined;
 
-export { handler as GET, handler as POST };
+  const sessionData = await auth.api.getSession({
+    headers: {
+      Authorization: `Bearer ${bearerToken}`
+    },
+  });
+
+  if (!sessionData) return undefined;
+
+  return {
+    token: bearerToken,
+    scopes: ["read:messages", "write:messages"],
+    clientId: "elden-mcp-client",
+    extra: {
+      userId: sessionData.user.id,
+      permissions: ["user"],
+      timestamp: new Date().toISOString(),
+    },
+  };
+};
+
+const authHandler = withMcpAuth(handler, verifyToken, {
+  required: true,
+  requiredScopes: ["read:messages"],
+  // MCP docs says this route is a must, but it seems to work without it?
+  // resourceMetadataPath: "/.well-known/oauth-protected-resource",
+});
+
+export { authHandler as GET, authHandler as POST };

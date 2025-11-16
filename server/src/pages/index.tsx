@@ -3,12 +3,12 @@ import { io, type Socket } from "socket.io-client";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const { data: session, isPending } = authClient.useSession();
+  const { data: sessionData, isPending } = authClient.useSession();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [socketStatus, setSocketStatus] = useState<string>("disconnected");
 
   useEffect(() => {
-    if (session && !socket) {
+    if (sessionData && !socket) {
       const hostname = typeof window !== "undefined" ? window.location.hostname : "localhost";
       const port = typeof window !== "undefined" ? window.location.port || "3000" : "3000";
 
@@ -19,7 +19,7 @@ export default function Home() {
       setSocket(newSocket);
 
       newSocket.on("connect", () => {
-        setSocketStatus(`connected: ${newSocket.id}`);
+        setSocketStatus(`connected. Bearer: ${sessionData.session.token}`);
       });
 
       newSocket.on("error", (msg: string) => {
@@ -37,21 +37,21 @@ export default function Home() {
       return () => {
         setSocketStatus("disconnected");
       };
-    } else if (!session && socket) {
+    } else if (!sessionData && socket) {
       socket.disconnect();
       setSocket(null);
       setSocketStatus("disconnected");
     }
-  }, [session, socket]);
+  }, [sessionData, socket]);
 
   if (isPending) return <p>Loading...</p>;
 
   return (
     <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
       <h1>Elden MCP Socket.IO Test</h1>
-      {session ? (
+      {sessionData ? (
         <>
-          <p>Signed in as {session.user.email}</p>
+          <p>Signed in as {sessionData.user.email}</p>
           <p>
             Socket Status: <strong>{socketStatus}</strong>
           </p>

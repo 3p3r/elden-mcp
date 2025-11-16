@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { genericOAuth } from "better-auth/plugins";
+import { genericOAuth, bearer } from "better-auth/plugins";
 import { getOidcConfig } from "./realm-config";
 import Database from "better-sqlite3";
 import { join, dirname } from "path";
@@ -22,6 +22,7 @@ export const auth = betterAuth({
   database: db,
   secret: process.env.BETTER_AUTH_SECRET || "change-me-please",
   plugins: [
+    bearer(),
     genericOAuth({
       config: [
         {
@@ -35,4 +36,3 @@ export const auth = betterAuth({
     }),
   ],
 });
-
