@@ -27,7 +27,9 @@ describe("Health Route - Real Implementation Tests", () => {
   describe("Unauthenticated Requests", () => {
     it("should return 401 when not authenticated and Keycloak is not available", async () => {
       // Mock headers to return empty headers (no session)
-      (headers as any).mockResolvedValue(new Headers());
+      const mockHeaders = new Headers();
+      mockHeaders.set("host", "localhost:3000");
+      (headers as any).mockResolvedValue(mockHeaders);
 
       const response = await GET();
 
@@ -49,7 +51,9 @@ describe("Health Route - Real Implementation Tests", () => {
 
     it("should redirect to Keycloak when not authenticated and Keycloak is available", async () => {
       // Mock headers to return empty headers (no session)
-      (headers as any).mockResolvedValue(new Headers());
+      const mockHeaders = new Headers();
+      mockHeaders.set("host", "localhost:3000");
+      (headers as any).mockResolvedValue(mockHeaders);
 
       // Check if Keycloak is available
       let keycloakAvailable = false;
@@ -84,7 +88,9 @@ describe("Health Route - Real Implementation Tests", () => {
     });
 
     it("should include correct OAuth parameters in redirect URL when Keycloak is available", async () => {
-      (headers as any).mockResolvedValue(new Headers());
+      const mockHeaders = new Headers();
+      mockHeaders.set("host", "localhost:3000");
+      (headers as any).mockResolvedValue(mockHeaders);
 
       // Check if Keycloak is available
       let keycloakAvailable = false;
@@ -127,6 +133,7 @@ describe("Health Route - Real Implementation Tests", () => {
       
       // Mock headers with a session cookie
       const mockHeaders = new Headers();
+      mockHeaders.set("host", "localhost:3000");
       // Note: In a real scenario, this would contain actual session cookies
       (headers as any).mockResolvedValue(mockHeaders);
 
@@ -153,6 +160,7 @@ describe("Health Route - Real Implementation Tests", () => {
     it("should handle access token retrieval with real auth implementation", async () => {
       // This test verifies the real getAccessToken implementation is called
       const mockHeaders = new Headers();
+      mockHeaders.set("host", "localhost:3000");
       (headers as any).mockResolvedValue(mockHeaders);
 
       const consoleLogSpy = vi.spyOn(console, "log").mockImplementation(() => {});
@@ -183,7 +191,9 @@ describe("Health Route - Real Implementation Tests", () => {
       process.env.OIDC_CLIENT_ID = "custom-client";
       process.env.BASE_URL = "http://custom:3000";
 
-      (headers as any).mockResolvedValue(new Headers());
+      const mockHeaders = new Headers();
+      mockHeaders.set("host", "custom:3000");
+      (headers as any).mockResolvedValue(mockHeaders);
 
       const response = await GET();
 
@@ -203,7 +213,9 @@ describe("Health Route - Real Implementation Tests", () => {
       delete process.env.OIDC_CLIENT_ID;
       delete process.env.BASE_URL;
 
-      (headers as any).mockResolvedValue(new Headers());
+      const mockHeaders = new Headers();
+      mockHeaders.set("host", "localhost:3000");
+      (headers as any).mockResolvedValue(mockHeaders);
 
       const response = await GET();
 
@@ -224,6 +236,7 @@ describe("Health Route - Real Implementation Tests", () => {
   describe("Integration with Real Better-Auth", () => {
     it("should use real auth.api.getSession implementation", async () => {
       const mockHeaders = new Headers();
+      mockHeaders.set("host", "localhost:3000");
       (headers as any).mockResolvedValue(mockHeaders);
 
       // Verify auth.api.getSession is the real implementation
@@ -240,6 +253,7 @@ describe("Health Route - Real Implementation Tests", () => {
 
     it("should use real auth.api.getAccessToken implementation", async () => {
       const mockHeaders = new Headers();
+      mockHeaders.set("host", "localhost:3000");
       (headers as any).mockResolvedValue(mockHeaders);
 
       // Verify auth.api.getAccessToken is the real implementation
