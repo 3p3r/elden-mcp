@@ -12,13 +12,13 @@ Remote execution of MCP tools through Socket IO.
 
 ## Summary
 
-This repository is an end-to-end solution offering remote execution capabilities for Model Context Protocol (MCP) tools via Socket.IO. It includes both server and client components, enabling seamless interaction with MCP tools over a network.
+This repository is an end-to-end solution offering remote execution capabilities for Model Context Protocol (MCP) tools via Socket IO. It includes both server and client components, enabling seamless interaction with MCP tools over a network.
 
 This implementation requires and enforces its users to authenticate using OpenID Connect (OIDC). The JWT token is both validated for authenticity and used to associate requests with specific users and their connected sockets.
 
 This implementation allows one socket connection per valid JWT token.
 
-The one socket connection's ID is exchanged in MCP calls to identify which client should execute the tool logic. This is
+The one socket connection's ID is exchanged in MCP calls to identify what client should execute the tool logic. This is
 automatically added to the MCP tool registrations for you.
 
 ## Problem
